@@ -19,6 +19,8 @@ export default function Layout() {
     return <></>;
   }
 
+  console.log("Teste");
+
   return (
     <>
       <StatusBar style="light" />
