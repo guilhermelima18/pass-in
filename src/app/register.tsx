@@ -1,11 +1,11 @@
 import { View, Image, StatusBar } from "react-native";
 import { Link } from "expo-router";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { Input } from "@/components/input";
 import { Button } from "@/components/button";
 import { colors } from "@/styles/colors";
 
-export default function Home() {
+export default function Register() {
   return (
     <View className="bg-green-500 flex-1 items-center justify-center p-8">
       <StatusBar barStyle="light-content" />
@@ -17,21 +17,30 @@ export default function Home() {
 
       <View className="w-full mt-12 gap-3">
         <Input>
-          <MaterialCommunityIcons
-            name="ticket-confirmation-outline"
+          <FontAwesome6
+            name="user-circle"
             size={20}
             color={colors.green[200]}
           />
-          <Input.Field placeholder="Código do seu ingresso" />
+          <Input.Field placeholder="Nome completo" />
         </Input>
 
-        <Button text="Acessar credencial" onPress={() => {}} />
+        <Input>
+          <MaterialIcons
+            name="alternate-email"
+            size={20}
+            color={colors.green[200]}
+          />
+          <Input.Field placeholder="E-mail" keyboardType="email-address" />
+        </Input>
+
+        <Button text="Realizar inscrição" onPress={() => {}} />
 
         <Link
-          href="/register"
+          href="/"
           className="text-gray-100 text-base font-bold text-center mt-8"
         >
-          Ainda não possui ingresso?
+          Já possui ingresso?
         </Link>
       </View>
     </View>

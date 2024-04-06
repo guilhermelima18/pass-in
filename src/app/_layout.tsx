@@ -1,12 +1,13 @@
 import { Slot } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import {
   useFonts,
   Roboto_400Regular,
   Roboto_500Medium,
   Roboto_700Bold,
 } from "@expo-google-fonts/roboto";
-import "../styles/global.css";
+import { Loading } from "@/components/loading";
+
+import "@/styles/global.css";
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
@@ -16,15 +17,8 @@ export default function Layout() {
   });
 
   if (!fontsLoaded) {
-    return <></>;
+    return <Loading />;
   }
 
-  console.log("Teste");
-
-  return (
-    <>
-      <StatusBar style="light" />
-      <Slot />
-    </>
-  );
+  return <Slot />;
 }
