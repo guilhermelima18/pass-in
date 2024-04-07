@@ -4,7 +4,9 @@ import {
   ImageBackground,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
+import { MotiView } from "moti";
 import { BadgeProps } from "@/store/badge-store";
 import { Feather } from "@expo/vector-icons";
 import { QRCode } from "@/components/qr-code";
@@ -21,8 +23,29 @@ export function Credential({
   onChangeAvatar,
   onShowQRCode,
 }: CredentialProps) {
+  const { width, height } = useWindowDimensions();
+
   return (
-    <View className="w-full self-stretch items-center">
+    <MotiView
+      className="w-full self-stretch items-center"
+      from={{
+        translateY: -height,
+        rotateZ: "50deg",
+        rotateY: "30deg",
+        rotateX: "30deg",
+      }}
+      animate={{
+        translateY: 0,
+        rotateZ: "0deg",
+        rotateY: "0deg",
+        rotateX: "0deg",
+      }}
+      transition={{
+        type: "spring",
+        damping: 20,
+        rotateZ: { damping: 15, mass: 3 },
+      }}
+    >
       <Image
         source={require("@/assets/ticket/band.png")}
         className="w-24 h-52 z-10"
@@ -81,6 +104,6 @@ export function Credential({
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </MotiView>
   );
 }

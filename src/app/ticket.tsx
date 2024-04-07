@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  Share,
 } from "react-native";
 import { Redirect } from "expo-router";
+import { MotiView } from "moti";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
 import { useBadgeStore } from "@/store/badge-store";
@@ -41,6 +43,18 @@ export default function Ticket() {
     }
   }
 
+  async function handleShare() {
+    try {
+      if (badgeStore.data?.checkInURL) {
+        await Share.share({
+          message: badgeStore.data.checkInURL,
+        });
+      }
+    } catch (error) {
+      Alert.alert("Compartilhar", "Não foi possível compartilhar");
+    }
+  }
+
   if (badgeStore.data === null) {
     return <Redirect href="/register" />;
   }
@@ -60,12 +74,18 @@ export default function Ticket() {
           onShowQRCode={() => setExpandedQRCode(true)}
         />
 
-        <FontAwesome
-          name="angle-double-down"
-          size={24}
-          color={colors.gray[300]}
-          className="self-center my-6"
-        />
+        <MotiView
+          from={{ translateY: 0 }}
+          animate={{ translateY: 10 }}
+          transition={{ loop: true, type: "timing", duration: 700 }}
+        >
+          <FontAwesome
+            name="angle-double-down"
+            size={24}
+            color={colors.gray[300]}
+            className="self-center my-6"
+          />
+        </MotiView>
 
         <Text className="text-white font-bold text-2xl mt-4">
           Compartilhar credencial
@@ -76,7 +96,7 @@ export default function Ticket() {
           {badgeStore.data.name}!
         </Text>
 
-        <Button text="Compartilhar" />
+        <Button text="Compartilhar" onPress={handleShare} />
 
         <TouchableOpacity
           activeOpacity={0.7}
@@ -99,7 +119,7 @@ export default function Ticket() {
             activeOpacity={0.7}
             onPress={() => setExpandedQRCode(false)}
           >
-            <QRCode value="Teste" size={300} />
+            <QRCode value={badgeStore.data.checkInURL} size={300} />
             <Text className="font-body text-orange-500 text-sm text-center mt-10">
               Fechar
             </Text>
