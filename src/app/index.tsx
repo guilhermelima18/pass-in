@@ -1,24 +1,50 @@
 import { useState } from "react";
+import axios from "axios";
 import { View, Image, StatusBar, Alert } from "react-native";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useAttendee } from "@/hooks/use-attendee";
+import { useBadgeStore } from "@/store/badge-store";
 import { Input } from "@/components/input";
 import { Button } from "@/components/button";
 import { colors } from "@/styles/colors";
 
 export default function Home() {
+  const { attendeeBadgeLoading, getAttendeeBadge } = useAttendee();
+  const badgeStore = useBadgeStore();
+
   const [code, setCode] = useState<string>("");
 
   function handleInputChange(value: string) {
     setCode(value);
   }
 
-  function handleAccessCredentials() {
+  async function handleAccessCredentials() {
     if (!code.trim()) {
       return Alert.alert("Atenção", "Não foi informado o código do ingresso!");
     }
 
-    console.warn(code);
+    try {
+      const response = await getAttendeeBadge(code);
+
+      if (response.data) {
+        badgeStore.save(response.data.badge);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (
+          String(error.response?.data.message).includes("already registered")
+        ) {
+          return Alert.alert("Inscrição", "Esse e-mail já está cadastrado");
+        }
+      }
+
+      Alert.alert("Inscrição", "Não foi possível fazer a inscrição");
+    }
+  }
+
+  if (badgeStore.data?.checkInURL) {
+    return <Redirect href="/ticket" />;
   }
 
   return (
@@ -43,7 +69,11 @@ export default function Home() {
           />
         </Input>
 
-        <Button text="Acessar credencial" onPress={handleAccessCredentials} />
+        <Button
+          text="Acessar credencial"
+          onPress={handleAccessCredentials}
+          isLoading={attendeeBadgeLoading}
+        />
 
         <Link
           href="/register"

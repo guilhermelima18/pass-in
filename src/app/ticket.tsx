@@ -8,8 +8,10 @@ import {
   Alert,
   Modal,
 } from "react-native";
+import { Redirect } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
+import { useBadgeStore } from "@/store/badge-store";
 import { Header } from "@/components/header";
 import { Credential } from "@/components/credential";
 import { Button } from "@/components/button";
@@ -17,7 +19,8 @@ import { QRCode } from "@/components/qr-code";
 import { colors } from "@/styles/colors";
 
 export default function Ticket() {
-  const [avatar, setAvatar] = useState<string>("");
+  const badgeStore = useBadgeStore();
+
   const [expandedQRCode, setExpandedQRCode] = useState<boolean>(false);
 
   async function handleChangeAvatar() {
@@ -30,12 +33,16 @@ export default function Ticket() {
 
       if (result.assets?.length) {
         const uri = result.assets[0].uri;
-        setAvatar(uri);
+        badgeStore.updateAvatar(uri);
       }
     } catch (error) {
       console.log(error);
       Alert.alert("Avatar", "Não foi possível selecionar o avatar!");
     }
+  }
+
+  if (badgeStore.data === null) {
+    return <Redirect href="/register" />;
   }
 
   return (
@@ -48,7 +55,7 @@ export default function Ticket() {
         showsVerticalScrollIndicator={false}
       >
         <Credential
-          avatar={avatar}
+          badge={badgeStore.data}
           onChangeAvatar={handleChangeAvatar}
           onShowQRCode={() => setExpandedQRCode(true)}
         />
@@ -65,12 +72,17 @@ export default function Ticket() {
         </Text>
 
         <Text className="text-white font-regular text-base mt-1 mb-6">
-          Mostre ao mundo que você vai participar do Unite Summit
+          Mostre ao mundo que você vai participar do Unite Summit,{" "}
+          {badgeStore.data.name}!
         </Text>
 
         <Button text="Compartilhar" />
 
-        <TouchableOpacity activeOpacity={0.7} className="mt-10">
+        <TouchableOpacity
+          activeOpacity={0.7}
+          className="mt-10"
+          onPress={() => badgeStore.remove()}
+        >
           <Text className="text-base text-white font-bold text-center">
             Remover ingresso
           </Text>
